@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Contact.css'
 
 const initialForm = {
@@ -12,35 +12,66 @@ const initialForm = {
 }
 
 export default function Contact() {
-    const [form, setForm] = useState(initialForm);
     const [status, setStatus] = useState({ type: '', message: '' });
+    const [form, setForm] = useState(initialForm);
+    /*Vamos criar uma ambientação de Loading no botão de buscar cep*/
+    const [loadingCep, setLoadingCep] = useState(false);
+    const [states, setStates] = useState([]);
+
+
 
     async function searchCep() {
         const cleanCep = form.cep.replace(/\D/g, '');
+
         if (cleanCep.length !== 8) {
-            setStatus({ type: 'error', message: 'Digite um CEP válido!' })
+            setStatus({ type: 'error', message: 'Digite um CEP válido!' });
+            return;
         }
+        setLoadingCep(true);
+
         try {
+            // Tempo para fazer a busca e aparecer a mensagem "Buscando..."
+            await new Promise((resolve => setTimeout(resolve, 500)));
+
             const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-            if  (!response.ok) throw new Error('Falha na busca do CEP!');
+
+                if (!response.ok) throw new Error('Falha na busca do CEP!');
+            
             const address = await response.json();
-            if (address.erro) throw new Error('CEP não encontrado');
+                if (address.erro) throw new Error('CEP não encontrado');
+
             setForm((current) => ({
                 ...current,
                 cep: cleanCep,
                 street: address.logradouro || '',
                 neighborhood: address.bairro || '',
-                state: address.uf || '',
+                state: address.estado || '',
                 city: address.localidade || ''
             }));
+
             setStatus({ type: 'success', message: 'Endereço encontrado!' });
-        } catch (erro) {
+            } catch (erro) {
+            
             setStatus({ type: 'error', message: erro.message });
+            } finally {            
+            setLoadingCep(false);
         }
     }
 
-// Função para lidar com mudanças dentro do código
-    function handleChange (event) {
+    useEffect(() => {
+        fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome')
+
+            .then((response) => {
+                if (!response.ok) throw new Error('...');
+                return response.json();
+            })
+            .then(setStates)
+            .catch(() => setStatus({ type: 'error', message: 'Não foi possível localizar os Estados' }))
+    }, []);
+    // OS colchetes, antes de encerrar o parênteses referente ao useEffect é utilizado para que a aplicação barre o carregamento contínuo dos Estados, ou seja, ele vai identificar a localidade e pausar. Observe em F12/network-Rede
+
+    // Função para lidar com mudanças dentro do código
+    function handleChange(event) {
         const { name, value } = event.target;
         setForm((current) => ({ ...current, [name]: value }));
     }
@@ -56,61 +87,68 @@ export default function Contact() {
                     <div className="form-grid">
                         <label>CEP
                             <div className="cep-field">
-                                <input 
+                                <input
                                     name="cep"
                                     value={form.cep}
                                     onChange={(event) => (setForm((current) => ({
-                                        current, cep: event.target.value})
+                                        current, cep: event.target.value
+                                    })
                                     ))}
-                                    inputMode="numeric" 
-                                    placeholder="00000-000" 
+                                    inputMode="numeric"
+                                    placeholder="00000-000"
                                 />
                                 <button type="button" onClick={searchCep}>
-
+                                    {loadingCep ? 'Buscando...' : 'Buscar CEP'}
                                 </button>
                             </div>
                         </label>
                         <label>Estado
-                            <select 
-                                name="state" 
+                            <select
+                                name="state"
+                                value = { form.state }
+                                onChange = { handleChange }
+
                             >
+                                <option>Estado</option>
+                                {states.map((state) => <option key={state.id} value={state.nome}>{state.nome}</option>)}
                             </select>
                         </label>
                         <label>Cidade
-                            <select 
-                                name="city" 
+                            <select
+                                name="city"
+                                value = { form.city }
+                                onChange = { handleChange }
                             >
                             </select>
                         </label>
                         <label>Rua
-                            <input 
-                                name="street" 
-                                placeholder="Nome da rua" 
-                                value={form.street}  //Puxar os dados referente a rua, observar criação do form lá em cima
+                            <input name="street"
+                                placeholder="Nome da rua"
+                                value={form.street}  /*Puxar os dados referente a rua, observar criação do form lá em cima*/
                                 onChange={handleChange}
                             />
                         </label>
                         <label>Número
-                            <input 
-                                name="number" 
-                                placeholder="123" 
+                            <input
+                                name="number"
+                                placeholder="123"
                             />
                         </label>
                         <label>Bairro
-                            <input 
-                                name="neighborhood" 
+                            <input
+                                name="neighborhood"
                                 placeholder="Seu bairro"
-                                value={form.neighborhood}   //Puxar os dados referente ao bairro, observar criação do form lá em cima
+                                value={form.neighborhood}   /*Puxar os dados referente ao bairro, observar criação do form lá em cima*/
                                 onChange={handleChange}
                             />
                         </label>
                     </div>
                 </div>
                 <label>Mensagem
-                    <textarea 
-                        name="message" 
-                        rows="5" 
-                        placeholder="Como podemos ajudar?" 
+                    <textarea
+                        name="message"
+                        rows="5"
+                        placeholder="Como podemos ajudar?"
                     />
                 </label>
                 <button className="submit-button" type="submit">Enviar mensagem</button>

@@ -17,8 +17,8 @@ function App() {
 {/* Aplicando um container para "centralizar" o nosso conteúdo */}
       <main className='container'>
         <Routes>
-          <Route path='/' element={<Home/>}/>
-          <Route path='/contato' element={<Contact/>}/>
+          <Route path='/' element = {<Home/>}/>
+          <Route path='/contato' element = {<Contact/>}/>
         </Routes>
       </main>
     </BrowserRouter>
