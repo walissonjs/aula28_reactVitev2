@@ -1,8 +1,8 @@
+import './App.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
-import { Header } from './components/Header';
+import { Header } from "./components/Header"; // também poderia ficar entre aspas simples
 import Contact from './Pages/Contact';
 import Home from './Pages/Home';
-import './App.css';
 
 function App() {
   return (
@@ -13,6 +13,8 @@ function App() {
           <a href="/#equipe">Equipe</a>
           <NavLink to="/contato">Contato</NavLink>
       </Header>
+
+{/* Aplicando um container para "centralizar" o nosso conteúdo */}
       <main className='container'>
         <Routes>
           <Route path='/' element={<Home/>}/>

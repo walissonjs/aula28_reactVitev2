@@ -1,11 +1,12 @@
-import './Greetings.css'
+import './Greetings.css';
 
-function Greetings({nome, mensagem = "Seja bem vindo(a)!"}) {
+// Vamos criar essa função e atribuir duas variáveis: nome e mensagem. Neste caso, estamos atribuindo um texto fixo para mensagem e a variável nome vai receber outro valor, vamos definir posteriormente.
+function Greetings({nome, mensagem = "Seja bem vind@!"}) {
     return(
         <div className="greeting">
-            <span className="greeting__eyebrow">React - Primeiros Passos</span>
-            <h1>{nome}, {mensagem}</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut, mollitia? Tempore facere culpa neque, eaque ducimus corrupti? Ipsa voluptatum aliquid temporibus itaque. Alias quia obcaecati, quas sed quod ad voluptates!</p>
+            <span className="greeting__eyebrow">→ React: Primeiros Passos</span>
+                <h1>{nome}, {mensagem}</h1>
+                    <p className="greeting p"> Estamos começando a trabalhar com o react, seus primeiros passos. Boa sorte!</p>
         </div>
     );
 }

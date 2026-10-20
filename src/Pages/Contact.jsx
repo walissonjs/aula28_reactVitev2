@@ -39,6 +39,12 @@ export default function Contact() {
         }
     }
 
+// Função para lidar com mudanças dentro do código
+    function handleChange (event) {
+        const { name, value } = event.target;
+        setForm((current) => ({ ...current, [name]: value }));
+    }
+
     return (
         <section className="contact-page">
             <span className="section-label">Fale com a gente</span>
@@ -60,6 +66,7 @@ export default function Contact() {
                                     placeholder="00000-000" 
                                 />
                                 <button type="button" onClick={searchCep}>
+
                                 </button>
                             </div>
                         </label>
@@ -79,6 +86,8 @@ export default function Contact() {
                             <input 
                                 name="street" 
                                 placeholder="Nome da rua" 
+                                value={form.street}  //Puxar os dados referente a rua, observar criação do form lá em cima
+                                onChange={handleChange}
                             />
                         </label>
                         <label>Número
@@ -90,7 +99,9 @@ export default function Contact() {
                         <label>Bairro
                             <input 
                                 name="neighborhood" 
-                                placeholder="Seu bairro" 
+                                placeholder="Seu bairro"
+                                value={form.neighborhood}   //Puxar os dados referente ao bairro, observar criação do form lá em cima
+                                onChange={handleChange}
                             />
                         </label>
                     </div>
